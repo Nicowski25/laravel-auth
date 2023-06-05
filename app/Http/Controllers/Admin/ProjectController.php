@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Project;
 use App\Http\Requests\StoreProjectRequest;
 use App\Http\Requests\UpdateProjectRequest;
+use SebastianBergmann\CodeCoverage\Report\Xml\Project as XmlProject;
 
 class ProjectController extends Controller
 {
@@ -15,7 +16,9 @@ class ProjectController extends Controller
      */
     public function index()
     {
-        //
+        $projects = Project::all();
+
+        return view('admin.projects.index');
     }
 
     /**
@@ -25,7 +28,7 @@ class ProjectController extends Controller
      */
     public function create()
     {
-        //
+        return view('admin.projects.create');
     }
 
     /**
@@ -36,7 +39,12 @@ class ProjectController extends Controller
      */
     public function store(StoreProjectRequest $request)
     {
-        //
+        {
+            $valData = $request->validated();
+            $valData["slug"] = Project::generateSlug($valData["title"]);
+            Project::create($valData);
+            return to_route("admin.projects.index")->with("message", "Project created successfully");
+        }
     }
 
     /**
@@ -47,7 +55,7 @@ class ProjectController extends Controller
      */
     public function show(Project $project)
     {
-        //
+        return view("admin.projects.show", compact("project"));
     }
 
     /**
